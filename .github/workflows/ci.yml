@@ -27,5 +27,5 @@ jobs:
         run: dotnet build SudokuMaui.sln -c Release --nologo
 
       - name: Publish Windows
-        run: dotnet publish ./Sudoku.Maui/Sudoku.Maui.csproj -f net10.0-windows10.0.19041.0 -r win-x64 -c Release -o ./artifacts/win /p:SelfContained=true /p:PublishSingleFile=true
+        run: dotnet publish .\Sudoku.Maui\Sudoku.Maui.csproj -f net10.0-windows10.0.19041.0 -c Release -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true
 
