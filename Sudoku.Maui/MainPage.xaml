@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:Sudoku.Maui.ViewModels"
+		x:DataType="vm:MainViewModel"
     Title="Sudoku MAUI">
 
 	<ContentPage.BindingContext>
@@ -14,7 +15,7 @@
 		<Grid ColumnDefinitions="*,Auto" Padding="12">
 			<HorizontalStackLayout Spacing="8">
 				<Label Text="Tamaño:" VerticalTextAlignment="Center"/>
-				<Picker x:Name="SizePicker" WidthRequest="100" SelectedIndexChanged="SizeChanged">
+				<Picker x:Name="SizePicker" WidthRequest="100" SelectedIndexChanged="OnPageSizeChanged">
 					<Picker.Items>
 						<x:String>4</x:String>
 						<x:String>6</x:String>

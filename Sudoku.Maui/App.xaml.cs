@@ -1,21 +1,19 @@
-﻿using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 
 namespace Sudoku.Maui;
 
 public partial class App : Application
 {
-    private readonly IServiceProvider _sp;
-
-    public App(IServiceProvider sp)
+    public App()
     {
         InitializeComponent();
-        _sp = sp;
     }
 
-    // Aquí reemplazas el MainPage obsoleto
+    // Forma recomendada en MAUI para todas las plataformas
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        var mainPage = _sp.GetRequiredService<MainPage>();
+        var mainPage = ServiceHelper.Services.GetRequiredService<MainPage>();
         return new Window(mainPage);
     }
 }

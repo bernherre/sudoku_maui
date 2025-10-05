@@ -1,32 +1,28 @@
-// Sudoku.Maui/ViewModels/GameViewModel.cs
+﻿// ViewModels/GameViewModel.cs
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Maui;
-using Microsoft.Maui.Dispatching; // <- necesario para IDispatcherTimer
+using Sudoku.Engine; // si usas tu engine en este namespace
 
 namespace Sudoku.Maui.ViewModels;
 
-// Evita cualquier Timer del BCL: NO agregues using System.Timers ni using System.Threading
 public partial class GameViewModel : ObservableObject
 {
-    private readonly IDispatcherTimer _timer;
+    private readonly System.Timers.Timer _timer;
 
-    [ObservableProperty] private bool isRunning;
-    [ObservableProperty] private TimeSpan elapsed = TimeSpan.Zero;
+    // ======= Estado =======
+    [ObservableProperty] private int elapsed;           // segundos transcurridos
+    [ObservableProperty] private bool isRunning;        // para habilitar/disable botones
+    [ObservableProperty] private object? selectedDifficulty; // o tu enum Difficulty
 
     public GameViewModel()
     {
-        // Application.Current!.Dispatcher siempre existe en MAUI
-        _timer = Application.Current!.Dispatcher.CreateTimer();
-        _timer.Interval = TimeSpan.FromSeconds(1);
-        _timer.IsRepeating = true;
-        _timer.Tick += (_, __) =>
-        {
-            // Ya estamos en el hilo de UI
-            Elapsed = Elapsed.Add(TimeSpan.FromSeconds(1));
-        };
+        _timer = new System.Timers.Timer(1000);
+        _timer.AutoReset = true;
+        _timer.Elapsed += (_, __) => Elapsed++;
     }
 
+    // ======= Comandos =======
     [RelayCommand]
     private void Start()
     {
@@ -48,6 +44,14 @@ public partial class GameViewModel : ObservableObject
     {
         IsRunning = false;
         _timer.Stop();
-        Elapsed = TimeSpan.Zero;
+        Elapsed = 0;
+        // reinicia aquí tu tablero si aplica
+    }
+
+    // Llamado desde la UI (Picker/RadioButton) para cambiar dificultad
+    public void SetDifficultyFromObject(object value)
+    {
+        // adapta a tu tipo real de dificultad
+        SelectedDifficulty = value;
     }
 }

@@ -1,46 +1,24 @@
-## Build
+# Build
 bin/
 obj/
-[Bb]uild/
-[Ll]og/
-artifacts/
-
-## VS / Rider
-.vs/
-.idea/
-*.suo
+**/bin/
+**/obj/
 *.user
-*.userosscache
-*.sln.docstates
+*.suo
 
-## OS
-.DS_Store
-Thumbs.db
+# VS/IDE
+.vs/
+*.userprefs
 
-## NuGet
-*.nupkg
-*.snupkg
-packages/
-.nuget/
+# Generated code-behind
+**/*.g.cs
+**/*.sg.cs
+**/intermediatexaml/
 
-## Transitory
-*.tmp
-*.temp
+# Android/iOS artifacts
+*.apk
+*.aab
+*.ipa
 
-## MAUI
-**/Platforms/Android/**/obj/
-**/Platforms/iOS/**/obj/
-**/Platforms/MacCatalyst/**/obj/
-**/Platforms/Windows/**/obj/
-**/Resources/Raw/*-Signed.aab
-**/Resources/Raw/*-Signed.apk
-
-## Test
-TestResults/
-coverage/
-*.trx
-*.coverage
-*.coveragexml
-
-## Tools
-.tools/
+# Logs
+*.log
