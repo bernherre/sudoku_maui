@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Sudoku.Maui.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:Sudoku.Maui.ViewModels"
+    Title="Sudoku MAUI">
+
+	<ContentPage.BindingContext>
+		<vm:GameViewModel />
+	</ContentPage.BindingContext>
+
+	<VerticalStackLayout Padding="16" Spacing="12">
+		<Grid ColumnDefinitions="*,Auto" Padding="12">
+			<HorizontalStackLayout Spacing="8">
+				<Label Text="Tamaño:" VerticalTextAlignment="Center"/>
+				<Picker x:Name="SizePicker" WidthRequest="100" SelectedIndexChanged="SizeChanged">
+					<Picker.Items>
+						<x:String>4</x:String>
+						<x:String>6</x:String>
+					</Picker.Items>
+				</Picker>
+
+				<Label Text="Dificultad:" VerticalTextAlignment="Center"/>
+				<Picker x:Name="DiffPicker" WidthRequest="120" SelectedIndexChanged="DifficultyChanged">
+					<Picker.Items>
+						<x:String>Fácil</x:String>
+						<x:String>Media</x:String>
+						<x:String>Difícil</x:String>
+					</Picker.Items>
+				</Picker>
+			</HorizontalStackLayout>
+
+			<HorizontalStackLayout Grid.Column="1" Spacing="8">
+				<Button Text="Nuevo" Command="{Binding NewGameCommand}" />
+				<Button Text="Verificar" Command="{Binding CheckCommand}" />
+				<Button Text="Resolver" Command="{Binding SolveCommand}" />
+				<Button Text="Limpiar" Command="{Binding ClearCommand}" />
+			</HorizontalStackLayout>
+		</Grid>
+
+		<Label Text="{Binding Elapsed, StringFormat='Tiempo: {0}'}" HorizontalTextAlignment="Center" />
+
+		<!-- Grid simple usando CollectionView; luego añadimos converters/estilos -->
+		<CollectionView ItemsSource="{Binding Cells}" SelectionMode="None">
+			<CollectionView.ItemsLayout>
+				<GridItemsLayout Orientation="Vertical" Span="{Binding Size}" />
+			</CollectionView.ItemsLayout>
+			<CollectionView.ItemTemplate>
+				<DataTemplate x:DataType="vm:CellVM">
+					<Frame Padding="0" Margin="2" HasShadow="False" CornerRadius="6">
+						<Grid BackgroundColor="#1F2937">
+							<Label Text="{Binding Value}" HorizontalOptions="Center" VerticalOptions="Center"
+										 FontAttributes="Bold" FontSize="Medium" />
+						</Grid>
+					</Frame>
+				</DataTemplate>
+			</CollectionView.ItemTemplate>
+		</CollectionView>
+	</VerticalStackLayout>
+</ContentPage>

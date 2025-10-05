@@ -1,0 +1,95 @@
+name: Release & Pages
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install MAUI workloads
+        run: dotnet workload install maui maui-windows maui-android
+
+      - name: Restore
+        run: dotnet restore
+
+      # Android APK (unsigned por simplicidad)
+      - name: Build Android
+        run: dotnet publish Sudoku.Maui/Sudoku.Maui.csproj -c Release -f net8.0-android -o out/android
+
+      # Windows exe self-contained (sin MSIX)
+      - name: Build Windows EXE
+        run: dotnet publish Sudoku.Maui/Sudoku.Maui.csproj -c Release -f net8.0-windows10.0.19041.0 -r win10-x64 -p:WindowsPackageType=None --self-contained true -o out/win
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: builds
+          path: |
+            out/android/**
+            out/win/**
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          prerelease: false
+          files: |
+            out/android/**/*.apk
+            out/win/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  pages:
+    needs: build-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build landing
+        run: |
+          mkdir site
+          cat > site/index.html << 'HTML'
+          <!doctype html>
+          <html lang="es"><meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1">
+          <title>Descargas – Sudoku MAUI</title>
+          <style>
+            body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:32px;max-width:900px;margin:auto;background:#0f172a;color:#e5e7eb}
+            .card{background:#111827;border:1px solid #374151;border-radius:12px;padding:16px;margin:12px 0}
+            a.button{display:inline-block;padding:10px 16px;border-radius:8px;background:#22c55e;color:#0b1220;text-decoration:none;font-weight:700}
+            a.button.secondary{background:#e5e7eb;color:#111827}
+          </style>
+          <h1>Sudoku MAUI — Descargas</h1>
+          <p>Las compilaciones se publican en <strong>GitHub Releases</strong>.</p>
+          <div class="card">
+            <h3>Última versión</h3>
+            <p><a class="button" href="./releases/latest">Ir a Releases (última)</a></p>
+            <p>Si no ves los archivos: refresca tras 1–2 minutos luego del tag.</p>
+          </div>
+          <div class="card">
+            <h3>Instrucciones</h3>
+            <ul>
+              <li><b>Windows</b>: descarga el ZIP de <code>out/win</code> y ejecuta el <code>.exe</code>.</li>
+              <li><b>Android</b>: descarga el <code>.apk</code> y habilita “Instalar apps de origen desconocido”.</li>
+            </ul>
+          </div>
+          HTML
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
